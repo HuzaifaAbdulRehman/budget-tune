@@ -1,0 +1,262 @@
+{
+  "models": {
+    "ml100k": {
+      "als": {
+        "family": "als",
+        "axes": [
+          "factors",
+          "epochs",
+          "n_train_interactions"
+        ],
+        "intercept": -6.337282669299568,
+        "exponents": {
+          "factors": 0.9512710099421481,
+          "epochs": 1.049646971342813,
+          "n_train_interactions": 0.08502100188596673
+        },
+        "r_squared": 0.969147260612203,
+        "n_points": 8,
+        "corner_observed": 17.640625,
+        "corner_predicted": 15.004349718871534,
+        "corner_ratio": 0.8505565828235414
+      },
+      "multvae": {
+        "family": "multvae",
+        "axes": [
+          "latent",
+          "hidden",
+          "epochs",
+          "n_train_interactions"
+        ],
+        "intercept": -5.319252454948485,
+        "exponents": {
+          "latent": 0.09088562214521007,
+          "hidden": 0.7061352572441913,
+          "epochs": 0.7869278640603088,
+          "n_train_interactions": -0.03324687389862663
+        },
+        "r_squared": 0.9999727146435692,
+        "n_points": 7,
+        "corner_observed": 0.9375,
+        "corner_predicted": 1.403176889950049,
+        "corner_ratio": 1.496722015946719
+      }
+    },
+    "luxury_beauty": {
+      "als": {
+        "family": "als",
+        "axes": [
+          "factors",
+          "epochs",
+          "n_train_interactions"
+        ],
+        "intercept": -5.19335431730828,
+        "exponents": {
+          "factors": 0.8546051064631557,
+          "epochs": 0.9818498021030597,
+          "n_train_interactions": 0.09859377100105615
+        },
+        "r_squared": 0.9423636705219803,
+        "n_points": 8,
+        "corner_observed": 29.296875,
+        "corner_predicted": 23.51098287392719,
+        "corner_ratio": 0.8025082154300481
+      },
+      "multvae": {
+        "family": "multvae",
+        "axes": [
+          "latent",
+          "hidden",
+          "epochs",
+          "n_train_interactions"
+        ],
+        "intercept": -3.8194918653440655,
+        "exponents": {
+          "latent": 0.014632297252597848,
+          "hidden": 0.6706032547947693,
+          "epochs": 0.9452294230569918,
+          "n_train_interactions": -0.0663020355120526
+        },
+        "r_squared": 0.9943509782767839,
+        "n_points": 7,
+        "corner_observed": 3.109375,
+        "corner_predicted": 4.0531530988616025,
+        "corner_ratio": 1.3035266247595103
+      }
+    },
+    "software": {
+      "als": {
+        "family": "als",
+        "axes": [
+          "factors",
+          "epochs",
+          "n_train_interactions"
+        ],
+        "intercept": -6.9883690967085,
+        "exponents": {
+          "factors": 0.8741343989876018,
+          "epochs": 1.038396391139092,
+          "n_train_interactions": 0.18151432220732078
+        },
+        "r_squared": 0.9495479541814946,
+        "n_points": 8,
+        "corner_observed": 14.375,
+        "corner_predicted": 9.137554679364426,
+        "corner_ratio": 0.6356559776949166
+      },
+      "multvae": {
+        "family": "multvae",
+        "axes": [
+          "latent",
+          "hidden",
+          "epochs",
+          "n_train_interactions"
+        ],
+        "intercept": -4.133028060543909,
+        "exponents": {
+          "latent": 0.22000708240502465,
+          "hidden": 0.6591141975769319,
+          "epochs": 0.7560451671158253,
+          "n_train_interactions": -0.18837512590607403
+        },
+        "r_squared": 0.9888719410697034,
+        "n_points": 7,
+        "corner_observed": 1.5625,
+        "corner_predicted": 1.9855614518167417,
+        "corner_ratio": 1.2707593291627146
+      }
+    },
+    "gift_cards": {
+      "als": {
+        "family": "als",
+        "axes": [
+          "factors",
+          "epochs",
+          "n_train_interactions"
+        ],
+        "intercept": -7.797346566493592,
+        "exponents": {
+          "factors": 0.7465699593841714,
+          "epochs": 0.9962037791116041,
+          "n_train_interactions": 0.23160120137554974
+        },
+        "r_squared": 0.9245058335121903,
+        "n_points": 8,
+        "corner_observed": 4.0625,
+        "corner_predicted": 2.0306397639849316,
+        "corner_ratio": 0.4998497880578293
+      },
+      "multvae": {
+        "family": "multvae",
+        "axes": [
+          "latent",
+          "hidden",
+          "epochs",
+          "n_train_interactions"
+        ],
+        "intercept": -7.586676110204061,
+        "exponents": {
+          "latent": 0.1570542952140318,
+          "hidden": 0.5153832844697721,
+          "epochs": 1.0924976219965215,
+          "n_train_interactions": -0.012252382768975056
+        },
+        "r_squared": 0.9951179644696758,
+        "n_points": 7,
+        "corner_observed": 0.203125,
+        "corner_predicted": 0.19061443896245286,
+        "corner_ratio": 0.9384095456613064
+      }
+    }
+  },
+  "campaign": {
+    "ml100k": {
+      "per_family_seconds": {
+        "popularity": 0.0,
+        "itemknn": 5.625,
+        "als": 4056.3387590617945,
+        "multvae": 602.1476134030955,
+        "markov": 2.8125,
+        "_serve_and_score": 231.72065235110313
+      },
+      "total_seconds": 4898.6445248159935,
+      "total_minutes": 81.6440754135999,
+      "runs": 1263,
+      "serve_and_score_per_run": 0.18346845000087342,
+      "cheap_family_seconds": {
+        "popularity": 0.0,
+        "itemknn": 0.15625,
+        "markov": 0.078125
+      },
+      "below_quantum_rows": 4
+    },
+    "luxury_beauty": {
+      "per_family_seconds": {
+        "popularity": 0.0,
+        "itemknn": 2.25,
+        "als": 6847.778038327648,
+        "multvae": 1889.366162838203,
+        "markov": 0.5625,
+        "_serve_and_score": 672.9617008487949
+      },
+      "total_seconds": 9412.918402014646,
+      "total_minutes": 156.88197336691076,
+      "runs": 1263,
+      "serve_and_score_per_run": 0.5328279499990458,
+      "cheap_family_seconds": {
+        "popularity": 0.0,
+        "itemknn": 0.0625,
+        "markov": 0.015625
+      },
+      "below_quantum_rows": 7
+    },
+    "software": {
+      "per_family_seconds": {
+        "popularity": 0.0,
+        "itemknn": 0.5625,
+        "als": 2707.027899476164,
+        "multvae": 690.4984814839115,
+        "markov": 0.5625,
+        "_serve_and_score": 255.02167619965803
+      },
+      "total_seconds": 3653.6730571597336,
+      "total_minutes": 60.89455095266223,
+      "runs": 1263,
+      "serve_and_score_per_run": 0.20191739999972924,
+      "cheap_family_seconds": {
+        "popularity": 0.0,
+        "itemknn": 0.015625,
+        "markov": 0.015625
+      },
+      "below_quantum_rows": 9
+    },
+    "gift_cards": {
+      "per_family_seconds": {
+        "popularity": 0.0,
+        "itemknn": 0.0,
+        "als": 684.9355789502771,
+        "multvae": 79.59579377631582,
+        "markov": 0.5625,
+        "_serve_and_score": 65.3589238497716
+      },
+      "total_seconds": 830.4527965763646,
+      "total_minutes": 13.84087994293941,
+      "runs": 1263,
+      "serve_and_score_per_run": 0.05174894999981916,
+      "cheap_family_seconds": {
+        "popularity": 0.0,
+        "itemknn": 0.0,
+        "markov": 0.015625
+      },
+      "below_quantum_rows": 9
+    }
+  },
+  "total_seconds": 18795.688780566736,
+  "total_hours": 5.221024661268538,
+  "cpu_to_wall": {
+    "ml100k": 0.9972797249447587,
+    "luxury_beauty": 0.994521949362084,
+    "software": 0.9900378999029186,
+    "gift_cards": 0.9976972040762067
+  }
+}

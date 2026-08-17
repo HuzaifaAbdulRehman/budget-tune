@@ -1,0 +1,72 @@
+name: tests
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff==0.16.3
+      - run: ruff check .
+
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - run: pip install -r requirements.txt
+
+      # CI runs a deliberately smaller suite than the development machine, and says so
+      # rather than letting a green tick imply otherwise.
+      #
+      # This project sits downstream of two private checkouts (qubo-rerank and
+      # rerank-green) which supply the metrics, solvers, measurement session and four of
+      # the five model families. They cannot be cloned here, so every test touching the
+      # split, the families or the measurement path is skipped. What remains -- the search
+      # space, the benchmark schema, and the structural guarantee that search-side code
+      # cannot reach the reporting split -- is companion-free by construction and is worth
+      # running on three Python versions.
+      #
+      # `-m "not timing"` deselects the measurement assertions: a shared runner can stall a
+      # process mid-window and fail them for reasons that have nothing to do with the code.
+      # `-rs` prints the reason for every skip.
+      - run: coverage run -m pytest tests/ -m "not timing" -rs
+      - run: coverage report
+
+      # Guards the guard. Exactly three things are legitimately unavailable here: the two
+      # private checkouts, the catalogue downloads, and torch. Any other skip -- a broken
+      # import, a marker typo, a dependency that quietly vanished -- would shrink the suite
+      # while CI stayed green, which is the failure mode this whole project is about.
+      - name: assert every skip has an expected reason
+        run: |
+          python -m pytest tests/ -m "not timing" -rs -q 2>&1 | tee pytest.log
+          if grep -E '^SKIPPED' pytest.log \
+             | grep -vE 'companion checkout not found|unavailable|torch'; then
+            echo "::error::a test was skipped for an unexpected reason (see above)"
+            exit 1
+          fi
+          echo "all skips accounted for"
+
+      # The leakage guarantee must hold in CI, where the companions are absent, because it
+      # is a property of this repository's own source and not of any dataset.
+      - name: the reporting split is unreachable from search-side code
+        run: python -m pytest tests/test_schema.py -q -k NoSearchSideCode

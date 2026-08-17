@@ -1,0 +1,26 @@
+# Exact resolved versions from the development machine. Pinned rather than ranged: three
+# repositories must agree on which interactions survive filtering and which item is held
+# out, and a resolver free to pick a different numpy is free to change a tie-break.
+#
+# torch is not listed. It is needed only by the MultVAE family and comes from the CPU
+# wheel index, which pip cannot resolve from this file:
+#     pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
+
+numpy==2.2.6
+scipy==1.15.3
+pandas==2.3.3
+matplotlib==3.10.9
+psutil==7.2.2
+
+optuna==4.9.0
+scikit-learn==1.7.2
+
+dimod==0.12.22
+dwave-neal==0.6.0
+dwave-samplers==1.8.0
+
+codecarbon==3.3.0
+
+pytest==9.1.1
+coverage==7.15.4
+ruff==0.16.3

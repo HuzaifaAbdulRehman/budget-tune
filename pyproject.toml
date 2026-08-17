@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "budget-tune"
+version = "0.1.0"
+description = "Quantum-inspired hyperparameter optimisation and model selection for recommender systems under measured resource budgets"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+
+# Pinned rather than ranged. Two companion projects must agree exactly on which
+# interactions survive filtering and which items are held out; a resolver free to pick a
+# different numpy would be free to change a tie-break, and a tie-break change moves
+# candidate sets. requirements.txt carries the exact resolved versions.
+dependencies = [
+    "numpy==2.2.6",
+    "scipy==1.15.3",
+    "pandas==2.3.3",
+    "matplotlib==3.10.9",
+    "psutil==7.2.2",
+    # HPO baselines. Optuna supplies the real TPE -- a reimplementation would make the
+    # strongest classical baseline something this project wrote, which is exactly the
+    # strawman the design forbids.
+    "optuna==4.9.0",
+    "scikit-learn==1.7.2",
+    # QUBO stack, inherited from the companion.
+    "dimod==0.12.22",
+    "dwave-neal==0.6.0",
+    "dwave-samplers==1.8.0",
+    # Recorded as a secondary channel and reported as invalid on this machine; kept so
+    # that claim stays reproducible rather than merely asserted.
+    "codecarbon==3.3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+    "coverage==7.15.4",
+    "ruff==0.16.3",
+]
+# torch is needed only by the MultVAE family and is installed from the CPU wheel index:
+#   pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
+neural = ["torch==2.13.0"]
+
+[tool.setuptools.packages.find]
+include = ["budget_tune*"]
+
+[tool.ruff]
+line-length = 95
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "companion: needs the qubo-rerank / rerank-green checkouts",
+    "data: needs a downloaded catalogue",
+    "timing: measures wall-clock or CPU time and is sensitive to machine load",
+]

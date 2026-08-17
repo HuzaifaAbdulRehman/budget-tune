@@ -1,0 +1,9 @@
+# Normalise line endings in the repository so a Windows checkout does not turn every file
+# into a diff for anyone else. Follows the sibling project.
+* text=auto eol=lf
+
+# Results are small and tracked deliberately; keep their diffs readable.
+*.csv text eol=lf
+*.json text eol=lf
+*.jsonl text eol=lf
+*.png binary

@@ -1,0 +1,41 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# Raw downloads are located, never copied -- see budget_tune/companion.py.
+#
+# Anchored with a leading slash, and that is not cosmetic: an unanchored "data/" matches a
+# directory of that name at *any* depth, so it silently excluded budget_tune/data/ -- the
+# package holding the leave-two-out split, the deduplication and the leakage guard. A clone
+# would have failed to import, and nothing here would have said why.
+/data/
+
+# Results are committed deliberately, per study, so tables can be regenerated from
+# artifacts. Lock files and in-progress checkpoints are not.
+#
+# The partial pattern matches the whole suffix: the campaign's checkpoints are named
+# "search_runs.partial.jsonl", and a "*.partial" rule does not match them.
+results/**/.measure.lock
+results/**/*.partial.jsonl
+
+# Operational logs, matching the sibling project. They are truncated on every launch, so
+# they are not durable provenance anyway -- the failures worth keeping are written up in
+# docs/campaign-history.md, which is committed.
+results/*.log
+results/**/*.log
+
+# The enumerated benchmark is excluded until the campaign completes. Its manifest currently
+# describes 225 of 5,052 rows, which is misleading provenance for a directory every later
+# table indexes. DELETE THIS RULE once the campaign finishes and the manifest is true.
+results/benchmark/
+
+# No AI tooling artifacts in the repository.
+.claude/
+CLAUDE.md
