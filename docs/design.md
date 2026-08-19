@@ -1,10 +1,9 @@
 # budget-tune — experimental design
 
-Status: **infrastructure and calibration complete, campaign not yet run.** The split, the
-search space, the benchmark schema, the sequential Markov family, the campaign runner, the
-calibration pilot and the Gift Cards fidelity study are in the tree. No optimiser exists
-yet. This document is the protocol those pieces implement, including the hypotheses it is
-capable of falsifying and a log of every revision.
+Status: **measured.** The 5,052-row enumerated table, RQ0, H1, RQ1, RQ2 and RQ3 are in
+`results/`; eight optimisers exist under `budget_tune/optimizers/`. This document remains the
+*protocol*, including the hypotheses it is capable of falsifying and a log of every revision;
+`docs/report.md` carries what the artifacts actually say, and wins wherever the two differ.
 
 This document has been through one hostile-reviewer audit (§13). Where the audit changed a
 decision, the change is marked **[AUDIT]** and the superseded version is stated, because a

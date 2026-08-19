@@ -7,6 +7,7 @@ regenerated from raw files is not a claim.
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 
 import pandas as pd
@@ -94,6 +95,32 @@ def check_optional_rq0(failures: list[str]) -> None:
         check(
             abs(float(report["E1"]["regret"])) < 1e-12,
             f"{report['dataset']} E1 regret drifted from 0",
+            failures,
+        )
+        # The in-sample regret above says a quadratic can represent the ranking. The
+        # held-out one says whether it can pick a cell it has not been shown, which is the
+        # question docs/design.md asked. It is deliberately *not* required to be zero --
+        # freezing it at a value would be inventing the result this experiment measures.
+        e1 = report["E1"]
+        check(
+            "held_out_fold_regret" in e1 and e1["held_out_fold_regret"] is not None,
+            f"{report['dataset']} E1 missing held_out_fold_regret",
+            failures,
+        )
+        check(
+            math.isfinite(float(e1.get("held_out_fold_regret", float("nan"))))
+            and float(e1["held_out_fold_regret"]) >= 0.0,
+            f"{report['dataset']} E1 held_out_fold_regret is not a finite non-negative number",
+            failures,
+        )
+        check(
+            int(e1.get("held_out_n_folds", 0)) >= 2,
+            f"{report['dataset']} E1 held-out regret used < 2 folds",
+            failures,
+        )
+        check(
+            e1.get("regret_is_in_sample") is True,
+            f"{report['dataset']} E1 no longer labels its in-sample regret as such",
             failures,
         )
 

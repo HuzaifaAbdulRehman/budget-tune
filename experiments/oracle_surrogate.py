@@ -2,6 +2,13 @@
 
 Cross-validated ridge over the enumerated search table, E1 (flat gated) and E2
 (per family). Run after the campaign. Does not open the reporting split.
+
+**Two regrets are reported and they answer different questions.** ``regret`` is in-sample:
+the surrogate is fitted on all rows and then asked which is best, so it measures whether a
+quadratic of this width can *represent* the ranking. ``held_out`` refits per fold and picks
+only among rows that fold never saw, which is what ``docs/design.md`` asked for and the only
+one that speaks to a surrogate searching from limited observations. Reporting the first
+alone overstates RQ0.
 """
 
 from __future__ import annotations
@@ -9,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from zlib import crc32
 
 import numpy as np
 import pandas as pd
@@ -16,7 +24,7 @@ import pandas as pd
 from budget_tune.benchmark.schema import load_search
 from budget_tune.space.codec import encode, encode_family
 from budget_tune.space.grids import FAMILIES, configuration_from_row
-from budget_tune.surrogate.ridge import argmin_regret, fit_ridge_quadratic
+from budget_tune.surrogate.ridge import argmin_regret, fit_ridge_quadratic, held_out_regret
 
 
 def _xy(frame: pd.DataFrame, mode: str, family: str | None = None):
@@ -33,7 +41,21 @@ def _xy(frame: pd.DataFrame, mode: str, family: str | None = None):
     return np.asarray(x, dtype=float), np.asarray(y, dtype=float), ids
 
 
-def analyse_dataset(directory: Path, dataset: str, rng: np.random.Generator) -> dict:
+def _independent_rng(seed: int, key: str) -> np.random.Generator:
+    """A generator keyed to one call site.
+
+    The held-out regret must not perturb the fold assignments of anything measured before
+    it. Drawing from the shared generator did exactly that when this was added: every later
+    fit received a different shuffle, and E2 ``itemknn`` on ML-100K moved from +0.199 to
+    -0.132 without a line of its own code changing. Keying each call independently makes a
+    new diagnostic incapable of rewriting an old number.
+    """
+    return np.random.default_rng([seed, crc32(key.encode())])
+
+
+def analyse_dataset(
+    directory: Path, dataset: str, rng: np.random.Generator, seed: int = 0
+) -> dict:
     view = load_search(directory, dataset)
     frame = view.frame
     report: dict = {"dataset": dataset, "n": len(frame), "E1": {}, "E2": {}}
@@ -41,6 +63,7 @@ def analyse_dataset(directory: Path, dataset: str, rng: np.random.Generator) -> 
     x, y, ids = _xy(frame, "E1")
     fit = fit_ridge_quadratic(x, y, rng=rng)
     regret = argmin_regret(x, y, fit["alpha"], maximise=True)
+    holdout = held_out_regret(x, y, rng=_independent_rng(seed, f"E1|{dataset}"), maximise=True)
     report["E1"] = {
         "variables": int(x.shape[1]),
         "ridge_alpha": fit["ridge_alpha"],
@@ -51,6 +74,12 @@ def analyse_dataset(directory: Path, dataset: str, rng: np.random.Generator) -> 
         "picked_true": regret["picked_true"],
         "regret": regret["regret"],
         "regret_normalised": regret["regret_normalised"],
+        "regret_is_in_sample": True,
+        "held_out_fold_regret": holdout.get("mean_fold_regret"),
+        "held_out_fold_regret_normalised": holdout.get("mean_fold_regret_normalised"),
+        "held_out_max_fold_regret": holdout.get("max_fold_regret"),
+        "held_out_folds_finding_their_own_best": holdout.get("folds_finding_their_own_best"),
+        "held_out_n_folds": holdout.get("n_folds"),
     }
 
     for spec in FAMILIES:
@@ -60,6 +89,9 @@ def analyse_dataset(directory: Path, dataset: str, rng: np.random.Generator) -> 
         xf, yf, idf = _xy(frame, "E2", family=spec.name)
         fit_f = fit_ridge_quadratic(xf, yf, rng=rng)
         regret_f = argmin_regret(xf, yf, fit_f["alpha"], maximise=True)
+        holdout_f = held_out_regret(
+            xf, yf, rng=_independent_rng(seed, f"E2|{dataset}|{spec.name}"), maximise=True
+        )
         report["E2"][spec.name] = {
             "n": int(len(sub)),
             "variables": int(xf.shape[1]),
@@ -71,6 +103,13 @@ def analyse_dataset(directory: Path, dataset: str, rng: np.random.Generator) -> 
             "picked_true": regret_f["picked_true"],
             "regret": regret_f["regret"],
             "regret_normalised": regret_f["regret_normalised"],
+            "regret_is_in_sample": True,
+            "held_out_fold_regret": holdout_f.get("mean_fold_regret"),
+            "held_out_fold_regret_normalised": holdout_f.get("mean_fold_regret_normalised"),
+            "held_out_folds_finding_their_own_best": holdout_f.get(
+                "folds_finding_their_own_best"
+            ),
+            "held_out_n_folds": holdout_f.get("n_folds"),
         }
     return report
 
@@ -85,7 +124,7 @@ def main() -> int:
     args.out.mkdir(parents=True, exist_ok=True)
     search = pd.read_csv(args.benchmark / "search.csv")
     datasets = list(search.dataset.unique())
-    reports = [analyse_dataset(args.benchmark, name, rng) for name in datasets]
+    reports = [analyse_dataset(args.benchmark, name, rng, args.seed) for name in datasets]
     (args.out / "oracle_surrogate.json").write_text(
         json.dumps(reports, indent=2, default=str), encoding="utf-8"
     )

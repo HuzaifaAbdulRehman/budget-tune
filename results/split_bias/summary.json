@@ -1,0 +1,324 @@
+{
+  "source": "results/benchmark/search.csv + report.csv, joined on (dataset, config_id)",
+  "n_cells_per_catalogue": 471,
+  "grid_candidate_set_size": 381,
+  "per_catalogue": [
+    {
+      "dataset": "gift_cards",
+      "spearman_val_test": 0.9520048208451499,
+      "val_argmax_family": "markov",
+      "val_argmax_config_id": "markov|order=1;smoothing=0.1;decay=false|frac=1.0",
+      "val_argmax_val": 0.197726006069792,
+      "val_argmax_test": 0.123876076563843,
+      "test_argmax_family": "itemknn",
+      "test_argmax_config_id": "itemknn|topk=100;shrink=10.0|frac=1.0",
+      "test_argmax_val": 0.190153832497763,
+      "test_argmax_test": 0.15015579114662,
+      "families_agree": false,
+      "val_optimum_in_grid_candidates": true,
+      "val_optimum_position_in_grid": 372,
+      "val_optimum_evaluated_by_grid": false,
+      "grid_candidates": 381,
+      "grid_evaluated": 96,
+      "grid_last_position": 96,
+      "grid_families_reached": [
+        "als",
+        "itemknn",
+        "popularity"
+      ],
+      "grid_families_never_reached": [
+        "multvae",
+        "markov"
+      ],
+      "grid_best_val_config_id": "markov|order=1;smoothing=0.1;decay=false|frac=1.0",
+      "grid_best_val_family": "markov",
+      "grid_best_val_test": 0.123876076563843,
+      "counterfactual_test_selection_family": "itemknn",
+      "counterfactual_test_selection_gain": 0.026279714582777003
+    },
+    {
+      "dataset": "luxury_beauty",
+      "spearman_val_test": 0.7742646554889123,
+      "val_argmax_family": "itemknn",
+      "val_argmax_config_id": "itemknn|topk=300;shrink=100.0|frac=1.0",
+      "val_argmax_val": 0.311446441993705,
+      "val_argmax_test": 0.168474260410597,
+      "test_argmax_family": "itemknn",
+      "test_argmax_config_id": "itemknn|topk=10;shrink=100.0|frac=1.0",
+      "test_argmax_val": 0.310401827753919,
+      "test_argmax_test": 0.169206510916712,
+      "families_agree": true,
+      "val_optimum_in_grid_candidates": true,
+      "val_optimum_position_in_grid": 30,
+      "val_optimum_evaluated_by_grid": true,
+      "grid_candidates": 381,
+      "grid_evaluated": 99,
+      "grid_last_position": 99,
+      "grid_families_reached": [
+        "als",
+        "itemknn",
+        "popularity"
+      ],
+      "grid_families_never_reached": [
+        "multvae",
+        "markov"
+      ],
+      "grid_best_val_config_id": "itemknn|topk=300;shrink=100.0|frac=1.0",
+      "grid_best_val_family": "itemknn",
+      "grid_best_val_test": 0.168474260410597,
+      "counterfactual_test_selection_family": "itemknn",
+      "counterfactual_test_selection_gain": 0.0007322505061150009
+    },
+    {
+      "dataset": "ml100k",
+      "spearman_val_test": 0.6550360811438632,
+      "val_argmax_family": "als",
+      "val_argmax_config_id": "als|factors=32;epochs=30;regularisation=0.1;alpha=1.0|frac=1.0",
+      "val_argmax_val": 0.079475733232263,
+      "val_argmax_test": 0.071815116574687,
+      "test_argmax_family": "als",
+      "test_argmax_config_id": "als|factors=32;epochs=15;regularisation=0.1;alpha=1.0|frac=1.0",
+      "test_argmax_val": 0.078174671117688,
+      "test_argmax_test": 0.073402189190272,
+      "families_agree": true,
+      "val_optimum_in_grid_candidates": true,
+      "val_optimum_position_in_grid": 244,
+      "val_optimum_evaluated_by_grid": false,
+      "grid_candidates": 381,
+      "grid_evaluated": 99,
+      "grid_last_position": 99,
+      "grid_families_reached": [
+        "als",
+        "itemknn",
+        "popularity"
+      ],
+      "grid_families_never_reached": [
+        "multvae",
+        "markov"
+      ],
+      "grid_best_val_config_id": "als|factors=32;epochs=30;regularisation=0.1;alpha=1.0|frac=1.0",
+      "grid_best_val_family": "als",
+      "grid_best_val_test": 0.071815116574687,
+      "counterfactual_test_selection_family": "als",
+      "counterfactual_test_selection_gain": 0.0015870726155849946
+    },
+    {
+      "dataset": "software",
+      "spearman_val_test": 0.8105504639842624,
+      "val_argmax_family": "markov",
+      "val_argmax_config_id": "markov|order=1;smoothing=0.5;decay=true|frac=1.0",
+      "val_argmax_val": 0.235366632471109,
+      "val_argmax_test": 0.044298759835335,
+      "test_argmax_family": "itemknn",
+      "test_argmax_config_id": "itemknn|topk=10;shrink=0.0|frac=1.0",
+      "test_argmax_val": 0.219479453803048,
+      "test_argmax_test": 0.135462037947413,
+      "families_agree": false,
+      "val_optimum_in_grid_candidates": true,
+      "val_optimum_position_in_grid": 375,
+      "val_optimum_evaluated_by_grid": false,
+      "grid_candidates": 381,
+      "grid_evaluated": 98,
+      "grid_last_position": 98,
+      "grid_families_reached": [
+        "als",
+        "itemknn",
+        "popularity"
+      ],
+      "grid_families_never_reached": [
+        "multvae",
+        "markov"
+      ],
+      "grid_best_val_config_id": "markov|order=1;smoothing=0.5;decay=true|frac=1.0",
+      "grid_best_val_family": "markov",
+      "grid_best_val_test": 0.044298759835335,
+      "counterfactual_test_selection_family": "itemknn",
+      "counterfactual_test_selection_gain": 0.09116327811207799
+    }
+  ],
+  "family_ratios": [
+    {
+      "dataset": "gift_cards",
+      "family": "als",
+      "n": 324,
+      "median_val": 0.080064337660863,
+      "median_test": 0.068193596557656,
+      "median_test_over_val": 0.8008712101805385
+    },
+    {
+      "dataset": "gift_cards",
+      "family": "itemknn",
+      "n": 36,
+      "median_val": 0.17649698167344302,
+      "median_test": 0.110751161354885,
+      "median_test_over_val": 0.7699853280915514
+    },
+    {
+      "dataset": "gift_cards",
+      "family": "markov",
+      "n": 36,
+      "median_val": 0.1745739906689495,
+      "median_test": 0.09781910539670449,
+      "median_test_over_val": 0.5829743420346669
+    },
+    {
+      "dataset": "gift_cards",
+      "family": "multvae",
+      "n": 72,
+      "median_val": 0.11342184336542199,
+      "median_test": 0.085626556427552,
+      "median_test_over_val": 0.7691544593707731
+    },
+    {
+      "dataset": "gift_cards",
+      "family": "popularity",
+      "n": 3,
+      "median_val": 0.091025123512025,
+      "median_test": 0.0637889194783,
+      "median_test_over_val": 0.6985043279934771
+    },
+    {
+      "dataset": "luxury_beauty",
+      "family": "als",
+      "n": 324,
+      "median_val": 0.210726497320012,
+      "median_test": 0.113322428294315,
+      "median_test_over_val": 0.5381542281309166
+    },
+    {
+      "dataset": "luxury_beauty",
+      "family": "itemknn",
+      "n": 36,
+      "median_val": 0.215816994259067,
+      "median_test": 0.119210240205171,
+      "median_test_over_val": 0.5437435162500168
+    },
+    {
+      "dataset": "luxury_beauty",
+      "family": "markov",
+      "n": 36,
+      "median_val": 0.258428640542262,
+      "median_test": 0.0451379116355355,
+      "median_test_over_val": 0.17197312933882292
+    },
+    {
+      "dataset": "luxury_beauty",
+      "family": "multvae",
+      "n": 72,
+      "median_val": 0.18760264919373848,
+      "median_test": 0.0996571456588745,
+      "median_test_over_val": 0.5194307009155245
+    },
+    {
+      "dataset": "luxury_beauty",
+      "family": "popularity",
+      "n": 3,
+      "median_val": 0.030595481469863,
+      "median_test": 0.011620229317796,
+      "median_test_over_val": 0.4352395016874049
+    },
+    {
+      "dataset": "ml100k",
+      "family": "als",
+      "n": 324,
+      "median_val": 0.0580643965594395,
+      "median_test": 0.046267938148990995,
+      "median_test_over_val": 0.8341892625841936
+    },
+    {
+      "dataset": "ml100k",
+      "family": "itemknn",
+      "n": 36,
+      "median_val": 0.055391287651423496,
+      "median_test": 0.043478074605921,
+      "median_test_over_val": 0.7897691865313938
+    },
+    {
+      "dataset": "ml100k",
+      "family": "markov",
+      "n": 36,
+      "median_val": 0.0380548989750325,
+      "median_test": 0.038914763700100996,
+      "median_test_over_val": 1.0175078677060143
+    },
+    {
+      "dataset": "ml100k",
+      "family": "multvae",
+      "n": 72,
+      "median_val": 0.045583888665514,
+      "median_test": 0.038061900819743005,
+      "median_test_over_val": 0.8683151021035376
+    },
+    {
+      "dataset": "ml100k",
+      "family": "popularity",
+      "n": 3,
+      "median_val": 0.017457135751078,
+      "median_test": 0.01537362845945,
+      "median_test_over_val": 0.9853337660856817
+    },
+    {
+      "dataset": "software",
+      "family": "als",
+      "n": 324,
+      "median_val": 0.19643631684733198,
+      "median_test": 0.0425547816932595,
+      "median_test_over_val": 0.5351276865642572
+    },
+    {
+      "dataset": "software",
+      "family": "itemknn",
+      "n": 36,
+      "median_val": 0.210635900770446,
+      "median_test": 0.0429818671309915,
+      "median_test_over_val": 0.2495448514492099
+    },
+    {
+      "dataset": "software",
+      "family": "markov",
+      "n": 36,
+      "median_val": 0.2169652340323165,
+      "median_test": 0.037446833511565,
+      "median_test_over_val": 0.16787020343036213
+    },
+    {
+      "dataset": "software",
+      "family": "multvae",
+      "n": 72,
+      "median_val": 0.157823653983934,
+      "median_test": 0.024514625535696,
+      "median_test_over_val": 0.504030916272072
+    },
+    {
+      "dataset": "software",
+      "family": "popularity",
+      "n": 3,
+      "median_val": 0.022287709613913,
+      "median_test": 0.011896324004189,
+      "median_test_over_val": 0.5337616206540475
+    }
+  ],
+  "markov_vs_other_families": {
+    "gift_cards": {
+      "markov_ratio": 0.5829743420346669,
+      "other_families_median_ratio": 0.7695698937311622,
+      "markov_relative": 0.7575326773870916
+    },
+    "luxury_beauty": {
+      "markov_ratio": 0.17197312933882292,
+      "other_families_median_ratio": 0.5287924645232205,
+      "markov_relative": 0.32521857037785223
+    },
+    "ml100k": {
+      "markov_ratio": 1.0175078677060143,
+      "other_families_median_ratio": 0.8512521823438656,
+      "markov_relative": 1.1953072060319128
+    },
+    "software": {
+      "markov_ratio": 0.16787020343036213,
+      "other_families_median_ratio": 0.5188962684630598,
+      "markov_relative": 0.32351399235840295
+    }
+  },
+  "reading": "Grid's apparent test advantage is not a property of its candidate set: the coarse grid contains the validation optimum on every catalogue and never evaluates it, because it enumerates in declaration order and the CPU budget expires inside the third family. Reordering FAMILIES would change grid's answer. Validation and test disagree about the winning family on the catalogues where markov wins validation. Markov keeps a far smaller share of its validation score on the short-history Amazon catalogues and none of the loss on ML-100K. Leave-two-out places validation one interaction after training and test two, so temporal adjacency would favour a first-order Markov model on validation. That is the reading these ratios fit; this experiment does not establish it."
+}
