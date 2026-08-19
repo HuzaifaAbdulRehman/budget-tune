@@ -1,80 +1,103 @@
 # budget-tune — report
 
-Status: **methods exist; the enumerated campaign has not finished.** Numbers below are
-recomputed from committed artifacts, not from memory. HPO comparisons are **not yet
-tested**. This file is the write-up the design promised; it will grow when
-`results/benchmark/` exists.
+Status: **enumerated table, RQ0, H1, RQ1, RQ2 and RQ3 are in the artifacts.** Numbers
+below are recomputed from those files, not from memory. Absolute NDCG is not comparable
+to the companion leave-one-out tables.
 
 ## Question
 
 Can quantum-inspired combinatorial optimisation provide a useful and defensible way to
-perform multi-objective model selection and hyperparameter optimisation for recommender
-systems under a constrained computational budget?
+perform model selection and hyperparameter optimisation for recommender systems under a
+constrained computational budget?
 
-QUBO is the HPO optimiser, not a thing being tuned. The stronger claim is not "QUBO beats
-grid search." A useful finding may be that QUBO is most valuable for *expressing
-constraints*. That hypothesis is stated so it can fail.
+QUBO is the HPO optimiser. The stronger claim is not "QUBO beats grid search." A useful
+finding may be that QUBO is most valuable for *expressing constraints*. That hypothesis
+was tested; it can fail.
 
-## What is implemented
+## What was measured
 
-- Leave-two-out split with post-k-core deduplication. The loader refuses a leaking
-  dataset. Absolute NDCG is not comparable to the companion leave-one-out tables.
-- Canonical CASH space of **471** configurations (`d = 44` binary variables, `p = 991`
-  quadratic parameters). Families: popularity, ItemKNN, ALS, MultVAE, sequential Markov.
-- BOCS (horseshoe Gibbs, Thompson sampling) and FMQA (rank-`K=8` factorization machine,
-  Adam; Kitai et al., *Phys. Rev. Research* 2, 013319, 2020). RQ1 acquisition is brute
-  force over the 471 cells so the comparison measures surrogates, not solvers.
-- Classical baselines: coarse grid, random, Optuna TPE, successive halving, Hyperband,
-  SM²-style energy-aware SH.
-- Equal-cost loop: cumulative CPU-seconds, duplicate proposals charged zero, optimiser
-  overhead in its own counters.
+- Leave-two-out split with post-k-core deduplication. `assemble` refuses a leaking
+  dataset.
+- Canonical CASH space of **471** configurations (`d = 44`, `p = 991`). Families:
+  popularity, ItemKNN, ALS, MultVAE, sequential Markov.
+- Enumerated table: **5,052** per-seed rows, four catalogues, one thread, AC
+  (`results/benchmark/`, source fingerprint `a0c52b4f4d5f77f4`).
+- BOCS and FMQA with **brute-force acquisition** over the 471 cells (RQ1 measures
+  surrogates, not QUBO solvers). Classical baselines: coarse grid, random, Optuna TPE,
+  successive halving, Hyperband, SM². Equal CPU-second budgets; Gift Cards freeze
+  (`n_init=20`, TPE startup 10, budget fraction 0.10), then 30 seeds on headline
+  catalogues.
 
-## Supported findings (before the campaign)
+## Supported findings
 
 **Repeat interactions would have biased the benchmark toward this project's own
-hypothesis.** 18.2% of Luxury Beauty 5-core rows are duplicate `(user, item)` pairs. A
-held-out item can also sit in training; serving masks seen items, so that user scores
-zero under every configuration. The count moved with data fraction (503 users at
-`f=0.25`, 802 at `f=1.0`), so less training data left more users scorable. Deduplicating
-after k-core removes the leak. `assemble` raises rather than returning a leaking dataset.
+hypothesis.** 18.2% of Luxury Beauty 5-core rows are duplicate `(user, item)` pairs.
+The leak count moved with data fraction (503 users at `f=0.25`, 802 at `f=1.0`).
+Deduplicating after k-core removes it.
 
-**`data_fraction` is not a cost lever for ALS or MultVAE in these implementations.** The
-calibration pilot (`results/calibration/`, 84 configurations, four catalogues, one thread,
-AC, 1,696 MHz stable) measured training-cost ratios `f=1.0 / f=0.25` of 0.76–1.30 for
-those families. Cost tracks user count, not interaction count. The energy lever is
-`factors`, `epochs`, and family. H1 as originally written is already contradicted.
+**`data_fraction` is not a cost lever for ALS or MultVAE.** Calibration ratios
+`f=1.0/f=0.25` were 0.76–1.30. On the full table (`results/h1/frontier.json`) ALS
+ratios are 1.00–1.32 and MultVAE 0.94–1.02. Markov *does* scale (about 1.7–2.6×).
+H1 as originally written remains contradicted for the expensive families.
 
-**Epochs are a real cost axis (C1). Rank correlation at low epochs is strong for ALS and
-weak for MultVAE (C2).** Gift Cards fidelity study, 792 fits, validation split only
-(`results/fidelity/fidelity_report.json`):
+**Epochs are a real cost axis (C1). C2 is strong for ALS and weak for MultVAE** on Gift
+Cards (`results/fidelity/fidelity_report.json`): ALS Spearman **0.922** (93% of a 0.991
+seed ceiling), top-5 overlap 0.80; MultVAE Spearman **0.587**, top-5 overlap **0.20**.
 
-- ALS Spearman 0.922 against a same-fidelity seed ceiling of 0.991 (93%); simulated SH
-  regret 0; top-5 overlap 0.80; cost ratio 0.165.
-- MultVAE Spearman 0.587 against ceiling 0.868 (68%); SH regret 0; top-5 overlap **0.20**;
-  cost ratio 0.494.
+**A quadratic can point at a good CASH cell (RQ0).** Cross-validated ridge on the gated
+encoding (`results/rq0/oracle_surrogate.json`) has E1 argmax regret **0.0** on all four
+catalogues, with held-out R² about 0.90–0.96. The QUBO story is not dead of
+misspecification at this width.
 
-Hyperband stays in the study with the MultVAE weakness declared. Companions were dirty on
-that run (`a08f0a6-dirty`, `2e2c938-dirty`).
+**RQ1, validation medians over 30 seeds** (`results/hpo/*_summary.csv`):
 
-**Thread pinning makes CPU-seconds and wall-seconds agree** to 0.990–0.999 in the pilot.
-`codecarbon` is not an energy axis on this machine (hardcoded 10.000 W RAM in the
-companion validity study; total reported power moves ~1.06× idle to load). An earlier
-companion sentence that a loaded run used less energy than idle was withdrawn and is not
-repeated here.
+| method | Gift Cards | ML-100K | Luxury Beauty | Software |
+|---|---|---|---|---|
+| tpe | 0.1977 | 0.0790 | 0.3114 | 0.2354 |
+| fmqa | 0.1975 | 0.0788 | 0.3104 | 0.2353 |
+| grid | 0.1902 | 0.0738 | 0.3114 | 0.2273 |
+| bocs | 0.1898 | 0.0776 | 0.3001 | 0.2270 |
 
-**Additive Markov smoothing would have been a dead axis.** Interpolation is required;
-tests pin that smoothing changes the ranking and that scores match an independent oracle
-to 1e-12.
+TPE and FMQA are close. BOCS is not the winner. On Luxury Beauty the table optimum is
+ItemKNN; grid and TPE both hit **0.3114**.
 
-## Not yet tested
+**The test split does not ratify every validation ranking** (`results/analyse/selected.csv`,
+`report.csv` read four times). Software is the clearest inversion: grid median test
+NDCG@10 **0.1342** against **0.044** for TPE/FMQA/BOCS. Validation winners can be
+wrong; that is why the split exists.
 
-RQ0 (quadratic ceiling on the enumerated table), RQ1 (equal-cost HPO), RQ2 (in-optimizer
-constraints vs post-filter), RQ3 (does the companion one-hot / cardinality barrier appear
-at `d=44`?). A 471-cell space makes a QUBO *solver* unnecessary for RQ1; that comparison
-lives in RQ3.
+**RQ2: post-filter is exact.** Slack-QUBO (linearised cost over bits, which is
+misspecified) often returns a feasible cell but not the post-filter optimum
+(`results/rq2/`). Scalarisation is feasible on Gift Cards and Software at the tested
+τ; it is infeasible at Luxury Beauty τ = 10th percentile. When the space is enumerable,
+post-filtering wins the constraint axis QUBO was supposed to own.
 
-## Campaign
+**RQ3: the companion cardinality barrier does not show up at d=44.** On Gift Cards,
+neal and tabu samples were **one-hot feasible before repair**. Tabu recovered the same
+surrogate argmax as brute force. Simulated bifurcation was unavailable under the
+current companion import. Categorical SA was run in the *feasible* encoding and is
+therefore not a like-for-like energy comparison with gated brute force.
 
-`python -m experiments.build_benchmark --all --threads 1` measures 5,052 cells. Partial
-directories are refused. See `docs/campaign-history.md` for the 23 failed attempts that
-preceded the runner now in the tree.
+**Thread pinning:** CPU/wall 0.990–0.999 in the pilot. `codecarbon` is not an energy
+axis here.
+
+## Not claimed
+
+- BOCS or FMQA beats strong classical HPO at equal cost as a general result.
+- A QUBO *solver* is necessary at 471 cells.
+- Retraining on train+val. Hit-rate vs depth. Companion Phase 5/6 CI ratios.
+- Transfer of the companion `P(Σx−k)²` disconnect to this encoding.
+
+## How to regenerate
+
+```text
+python -m experiments.verify_claims
+python -m experiments.check_report
+python -m experiments.oracle_surrogate
+python -m experiments.frontier
+python -m experiments.run_hpo --dataset gift_cards
+python -m experiments.run_hpo --dataset ml100k
+python -m experiments.analyse
+python -m experiments.barrier --dataset gift_cards
+python -m experiments.constrained --dataset ml100k
+```

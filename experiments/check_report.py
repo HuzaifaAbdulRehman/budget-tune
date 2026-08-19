@@ -34,6 +34,8 @@ def main() -> int:
     # Space size is load-bearing.
     if "471" not in text:
         failures.append("report does not mention the 471-cell space")
+    if "5,052" not in text and "5052" not in text:
+        failures.append("report does not mention the 5,052-row campaign")
     print(f"{len(failures)} failures")
     for item in failures:
         print(f"  FAIL {item}")

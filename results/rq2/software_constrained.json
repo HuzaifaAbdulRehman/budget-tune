@@ -1,0 +1,72 @@
+[
+  {
+    "dataset": "software",
+    "quantile": 0.1,
+    "tau": 0.017361111111111,
+    "feasible_fraction": 0.11040339702760085,
+    "post_filter_config_id": "markov|order=1;smoothing=0.5;decay=true|frac=1.0",
+    "post_filter_quality": 0.235366632471109,
+    "scalarise_config_id": "markov|order=1;smoothing=0.1;decay=true|frac=1.0",
+    "scalarise_quality": 0.235348037614041,
+    "scalarise_feasible": true,
+    "slack_qubo_config_id": "markov|order=1;smoothing=0.5;decay=true|frac=1.0",
+    "slack_qubo_quality": 0.235366632471109,
+    "slack_qubo_feasible": true
+  },
+  {
+    "dataset": "software",
+    "quantile": 0.25,
+    "tau": 0.484375,
+    "feasible_fraction": 0.25690021231422505,
+    "post_filter_config_id": "markov|order=1;smoothing=0.5;decay=true|frac=1.0",
+    "post_filter_quality": 0.235366632471109,
+    "scalarise_config_id": "markov|order=1;smoothing=0.1;decay=true|frac=1.0",
+    "scalarise_quality": 0.235348037614041,
+    "scalarise_feasible": true,
+    "slack_qubo_config_id": "markov|order=1;smoothing=0.1;decay=false|frac=1.0",
+    "slack_qubo_quality": 0.234937258133011,
+    "slack_qubo_feasible": true
+  },
+  {
+    "dataset": "software",
+    "quantile": 0.5,
+    "tau": 2.03125,
+    "feasible_fraction": 0.505307855626327,
+    "post_filter_config_id": "markov|order=1;smoothing=0.5;decay=true|frac=1.0",
+    "post_filter_quality": 0.235366632471109,
+    "scalarise_config_id": "markov|order=1;smoothing=0.5;decay=true|frac=1.0",
+    "scalarise_quality": 0.235366632471109,
+    "scalarise_feasible": true,
+    "slack_qubo_config_id": "itemknn|topk=100;shrink=10.0|frac=1.0",
+    "slack_qubo_quality": 0.226265831352466,
+    "slack_qubo_feasible": true
+  },
+  {
+    "dataset": "software",
+    "quantile": 0.75,
+    "tau": 2.84375,
+    "feasible_fraction": 0.7494692144373672,
+    "post_filter_config_id": "markov|order=1;smoothing=0.5;decay=true|frac=1.0",
+    "post_filter_quality": 0.235366632471109,
+    "scalarise_config_id": "markov|order=1;smoothing=0.5;decay=true|frac=1.0",
+    "scalarise_quality": 0.235366632471109,
+    "scalarise_feasible": true,
+    "slack_qubo_config_id": "itemknn|topk=50;shrink=100.0|frac=1.0",
+    "slack_qubo_quality": 0.226969725559304,
+    "slack_qubo_feasible": true
+  },
+  {
+    "dataset": "software",
+    "quantile": 1.0,
+    "tau": 16.84375,
+    "feasible_fraction": 1.0,
+    "post_filter_config_id": "markov|order=1;smoothing=0.5;decay=true|frac=1.0",
+    "post_filter_quality": 0.235366632471109,
+    "scalarise_config_id": "markov|order=1;smoothing=0.5;decay=true|frac=1.0",
+    "scalarise_quality": 0.235366632471109,
+    "scalarise_feasible": true,
+    "slack_qubo_config_id": "als|factors=64;epochs=5;regularisation=0.001;alpha=10.0|frac=1.0",
+    "slack_qubo_quality": 0.21837324222733,
+    "slack_qubo_feasible": true
+  }
+]

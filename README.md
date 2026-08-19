@@ -8,11 +8,9 @@ design is written so that "no", "only under constraints", "the surrogate is the 
 and "a brute-force enumeration makes the whole apparatus unnecessary" are all reachable
 conclusions, and it pre-registers which of them the evidence would support.
 
-> **Status: methods implemented, enumerated campaign not yet complete.** The split, the
-> search space, the encoder, BOCS and FMQA surrogates, classical HPO baselines, the
-> sequential Markov family and the calibration/fidelity pilots are in the tree. No
-> headline HPO result is claimed until the 471-cell table exists.
-> [`docs/design.md`](docs/design.md) is the protocol.
+> **Status: table, RQ0, H1 and RQ1 are measured.** The 5,052-cell benchmark is in
+> `results/benchmark/`. Equal-cost HPO does not show a BOCS/FMQA win over TPE; see
+> [`docs/report.md`](docs/report.md). [`docs/design.md`](docs/design.md) is the protocol.
 
 ## What it is
 
@@ -27,8 +25,7 @@ function. Two published surrogates are the intended methods — **BOCS** (Baptis
 2018: horseshoe prior, Gibbs sampling, Thompson sampling) and **FMQA** (Kitai et al., *Phys.
 Rev. Research* 2020: a factorization machine minimised on an Ising machine). Both are
 implemented in this tree. The encoder, the QUBO layer and the equal-cost HPO loop exist;
-they have not yet been run on the enumerated benchmark, because that table has not been
-measured.
+they have been run on the enumerated table. The comparison is in [`docs/report.md`](docs/report.md).
 
 Neither is novel, and the repository says so. What has not been done, as far as a documented
 search could establish, is comparing them against strong classical HPO on recommender model

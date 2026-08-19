@@ -91,6 +91,20 @@ def check_optional_rq0(failures: list[str]) -> None:
     reports = json.loads(path.read_text(encoding="utf-8"))
     for report in reports:
         check("E1" in report and "regret" in report["E1"], "RQ0 missing E1 regret", failures)
+        check(
+            abs(float(report["E1"]["regret"])) < 1e-12,
+            f"{report['dataset']} E1 regret drifted from 0",
+            failures,
+        )
+
+
+def check_optional_hpo(failures: list[str]) -> None:
+    for name in ("gift_cards", "ml100k", "luxury_beauty", "software"):
+        path = ROOT / "results/hpo" / f"{name}_summary.csv"
+        if not path.exists():
+            continue
+        frame = pd.read_csv(path)
+        check(len(frame) == 240, f"{name} HPO has {len(frame)} rows, expected 240", failures)
 
 
 def main() -> int:
@@ -100,6 +114,7 @@ def main() -> int:
     check_calibration(failures)
     check_optional_campaign(failures)
     check_optional_rq0(failures)
+    check_optional_hpo(failures)
     print(f"{len(failures)} failures")
     for item in failures:
         print(f"  FAIL {item}")
