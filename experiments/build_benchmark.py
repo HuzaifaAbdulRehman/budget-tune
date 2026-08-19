@@ -50,13 +50,15 @@ REPORT_PARTIAL = "report_runs.partial.jsonl"
 def source_fingerprint() -> dict:
     """A content hash of the code that produced a results directory.
 
-    The design requires one code version per results directory. This repository is not a git
-    checkout, so there is no revision to record; hashing the sources is the honest substitute
-    and it fails the same way a dirty working tree would -- by changing.
+    The design requires one code version per results directory. Git records a revision, but
+    hashing the sources still catches uncommitted edits the same way a dirty working tree
+    would -- by changing -- and does not depend on git being available to whoever reads the
+    manifest.
     """
     digest = hashlib.sha256()
     files = sorted(
-        p for d in ("budget_tune", "experiments")
+        p
+        for d in ("budget_tune", "experiments")
         for p in (REPO_ROOT / d).rglob("*.py")
         if "__pycache__" not in p.parts
     )
@@ -128,9 +130,7 @@ def measure_configuration(dataset, config, seed: int, k: int, session, evaluate)
         "data_fraction": config.data_fraction,
         "seed": seed,
     }
-    hyperparameters = {
-        f"{config.family}.{name}": value for name, value in config.params
-    }
+    hyperparameters = {f"{config.family}.{name}": value for name, value in config.params}
 
     search = {
         **identity,
@@ -145,10 +145,9 @@ def measure_configuration(dataset, config, seed: int, k: int, session, evaluate)
         "select_cpu_seconds": selection.cpu_seconds_each,
         "serve_cpu_seconds_per_request": (
             scoring.cpu_seconds_each + selection.cpu_seconds_each
-        ) / max(len(users), 1),
-        "peak_rss_bytes": max(
-            r.peak_rss_bytes or 0 for r in (train, scoring, selection)
-        ),
+        )
+        / max(len(users), 1),
+        "peak_rss_bytes": max(r.peak_rss_bytes or 0 for r in (train, scoring, selection)),
         "model_bytes": model.model_bytes,
         "n_train_interactions": fold.n_interactions,
         "n_eval_users": int(len(users)),
@@ -368,34 +367,41 @@ def main() -> int:
     parser.add_argument("--out", type=Path, default=Path("results/benchmark"))
     parser.add_argument("--flush-every", type=int, default=25)
     parser.add_argument(
-        "--contention-margin", type=float, default=CONTENTION_MARGIN_CORES,
+        "--contention-margin",
+        type=float,
+        default=CONTENTION_MARGIN_CORES,
         help="cores a competing process must add over this machine's measured idle baseline "
-             "before the run stops. The threshold is baseline + margin; there is no absolute "
-             "tolerance to set.",
+        "before the run stops. The threshold is baseline + margin; there is no absolute "
+        "tolerance to set.",
     )
     parser.add_argument(
-        "--baseline-seconds", type=float, default=5.0,
+        "--baseline-seconds",
+        type=float,
+        default=5.0,
         help="how long to measure the idle baseline for, after preflight",
     )
     parser.add_argument(
-        "--limit", type=int, default=None,
+        "--limit",
+        type=int,
+        default=None,
         help="measure at most N cells. For validating the pipeline end to end, never for "
-             "producing a benchmark -- a truncated space is not the space.",
+        "producing a benchmark -- a truncated space is not the space.",
     )
     parser.add_argument(
-        "--finalise-only", action="store_true",
+        "--finalise-only",
+        action="store_true",
         help="promote existing partial files to the schema's four files and stop",
     )
     parser.add_argument(
-        "--force", action="store_true",
+        "--force",
+        action="store_true",
         help="finalise even when the manifest records a conditions change. Only after "
-             "establishing that the affected rows are not in this directory.",
+        "establishing that the affected rows are not in this directory.",
     )
     args = parser.parse_args()
 
     if not args.finalise_only:
         pin(args.threads)
-
 
     from budget_tune.benchmark import evaluate, schema
     from budget_tune.companion import ensure_all_importable, revisions

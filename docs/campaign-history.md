@@ -98,10 +98,17 @@ measured before it.
 
 This is the intended behaviour: interruptions cost wall-clock, never data.
 
-## What survives from all of this
+### 6. The 225-row remnant was discarded, not resumed
 
-Every row in the benchmark was measured on mains power, verified before and after its own
-measurement, on a machine whose competing load was recorded in the row itself. The
-`other_cores` column means the question "was this measured on a quiet machine?" is answerable
-from the data rather than from a promise — which is precisely the question that could not be
-answered about the 1,513 rows discarded above.
+Those 225 rows sat on disk under `results/benchmark/`, gitignored so they could not be
+mistaken for a finished table. They were never committed. On 18 August 2026 a one-cell
+pipeline check appended a 226th row from a later source fingerprint and overwrote the
+manifest, so the remnant was no longer a single-code-version prefix. The directory was
+deleted. The campaign that follows starts from zero.
+
+## What the runner now guarantees
+
+Every kept row is measured on mains power, verified before and after its own measurement,
+on a machine whose competing load is recorded in the row itself. The `other_cores` column
+means the question "was this measured on a quiet machine?" is answerable from the data
+rather than from a promise.

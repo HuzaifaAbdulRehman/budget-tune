@@ -26,22 +26,23 @@ from budget_tune.space.grids import (
 #: Hand-computed, per family. Any change here must be reflected in docs/design.md and in
 #: the campaign estimate.
 EXPECTED_BASE = {
-    "popularity": 1,           # no hyperparameters
-    "itemknn": 4 * 3,          # topk x shrink
-    "als": 4 * 3 * 3 * 3,      # factors x epochs x regularisation x alpha
+    "popularity": 1,  # no hyperparameters
+    "itemknn": 4 * 3,  # topk x shrink
+    "als": 4 * 3 * 3 * 3,  # factors x epochs x regularisation x alpha
     "multvae": 3 * 2 * 2 * 2,  # latent x hidden x epochs x dropout
-    "markov": 2 * 3 * 2,       # order x smoothing x decay
+    "markov": 2 * 3 * 2,  # order x smoothing x decay
 }
 EXPECTED_TOTAL = sum(EXPECTED_BASE.values()) * len(DATA_FRACTIONS)
 
 
 class TestSize:
-    def test_data_fractions_are_the_fidelity_ladder(self):
+    def test_data_fractions_are_three_nested_retention_levels(self):
         """Three levels, ascending, ending at full data.
 
-        The rungs of successive halving *are* these values, so a fourth level or a
-        reordering would break the identity between a low-fidelity probe and an
-        already-measured configuration.
+        These are a decision variable of the CASH space, not the successive-halving
+        rungs -- those are epochs, pinned in ``tests/test_fidelity.py``. A fourth
+        level or a reordering would still change every campaign estimate and every
+        nested-retention test, so the tuple is pinned here too.
         """
         assert DATA_FRACTIONS == (0.25, 0.5, 1.0)
         assert list(DATA_FRACTIONS) == sorted(DATA_FRACTIONS)

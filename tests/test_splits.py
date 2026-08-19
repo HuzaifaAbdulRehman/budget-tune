@@ -174,10 +174,23 @@ def repeats() -> pd.DataFrame:
     * user ``d`` has no repeats at all and must pass through untouched.
     """
     rows = [
-        ("a", "i1", 10), ("a", "i2", 20), ("a", "i3", 30), ("a", "i1", 40),
-        ("b", "i1", 11), ("b", "i2", 21), ("b", "i3", 31), ("b", "i2", 41), ("b", "i4", 51),
-        ("c", "i4", 12), ("c", "i4", 22), ("c", "i1", 32), ("c", "i2", 42), ("c", "i3", 52),
-        ("d", "i1", 13), ("d", "i2", 23), ("d", "i3", 33),
+        ("a", "i1", 10),
+        ("a", "i2", 20),
+        ("a", "i3", 30),
+        ("a", "i1", 40),
+        ("b", "i1", 11),
+        ("b", "i2", 21),
+        ("b", "i3", 31),
+        ("b", "i2", 41),
+        ("b", "i4", 51),
+        ("c", "i4", 12),
+        ("c", "i4", 22),
+        ("c", "i1", 32),
+        ("c", "i2", 42),
+        ("c", "i3", 52),
+        ("d", "i1", 13),
+        ("d", "i2", 23),
+        ("d", "i3", 33),
     ]
     return pd.DataFrame(
         [{"user_id": u, "item_id": i, "rating": 1.0, "timestamp": t} for u, i, t in rows]
@@ -407,11 +420,11 @@ class TestAssembledDataset:
             assert fold.matrix.nnz == fold.n_interactions
 
     def test_the_task_is_identical_at_every_data_fraction(self, dataset):
-        """Comparable task definition across the fidelity ladder.
+        """Comparable task definition at every data fraction.
 
-        Three things must hold at every fraction for a rung to be a probe of the
-        configuration above it rather than a different experiment: the same users are
-        scorable, against the same targets, with none of them masked.
+        Three things must hold at every fraction so that a low-fraction configuration
+        is the same experiment on less recent data, not a different population: the
+        same users are scorable, against the same targets, with none of them masked.
         """
         from budget_tune.data.splits import target_leakage
 
@@ -420,7 +433,8 @@ class TestAssembledDataset:
             assert target_leakage(fold.matrix, dataset.validation) == 0, fraction
             assert target_leakage(fold.matrix, dataset.test) == 0, fraction
             scorable = [
-                row for row in users
+                row
+                for row in users
                 if dataset.validation[int(row)] not in fold.matrix[int(row)].indices
             ]
             assert len(scorable) == len(users), fraction

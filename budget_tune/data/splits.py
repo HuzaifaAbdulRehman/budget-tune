@@ -209,9 +209,7 @@ def target_leakage(matrix: sparse.csr_matrix, targets: dict[int, int]) -> int:
     """
     indptr, indices = matrix.indptr, matrix.indices
     return sum(
-        1
-        for row, item in targets.items()
-        if item in indices[indptr[row] : indptr[row + 1]]
+        1 for row, item in targets.items() if item in indices[indptr[row] : indptr[row + 1]]
     )
 
 
@@ -219,8 +217,11 @@ def retain_recent(train: pd.DataFrame, fraction: float) -> pd.DataFrame:
     """Keep each user's most recent ``ceil(fraction * n)`` interactions, minimum one.
 
     Deterministic: no seed, no sampling. Two runs at the same fraction retain the same
-    rows, which is what lets a multi-fidelity rung *be* an already-measured table row
-    rather than an approximation of one.
+    rows, so a low-fraction configuration is a well-defined subset of a high-fraction
+    one rather than a different random sample. That identity still matters for the
+    nested-fold tests and for comparing configurations; it is no longer used as a
+    successive-halving resource, because the pilot found it does not cheapen ALS or
+    MultVAE.
     """
     if not 0.0 < fraction <= 1.0:
         raise ValueError(f"fraction must be in (0, 1]; got {fraction}")
@@ -357,9 +358,7 @@ class HpoDataset:
         if split not in {"validation", "test"}:
             raise ValueError(f"split must be 'validation' or 'test'; got {split!r}")
         mapping = self.validation if split == "validation" else self.test
-        return [
-            {mapping[int(row)]} if int(row) in mapping else set() for row in user_rows
-        ]
+        return [{mapping[int(row)]} if int(row) in mapping else set() for row in user_rows]
 
 
 def assemble(

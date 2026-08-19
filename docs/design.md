@@ -1,6 +1,10 @@
 # budget-tune — experimental design
 
-Status: **awaiting final approval. No code written.**
+Status: **infrastructure and calibration complete, campaign not yet run.** The split, the
+search space, the benchmark schema, the sequential Markov family, the campaign runner, the
+calibration pilot and the Gift Cards fidelity study are in the tree. No optimiser exists
+yet. This document is the protocol those pieces implement, including the hypotheses it is
+capable of falsifying and a log of every revision.
 
 This document has been through one hostile-reviewer audit (§13). Where the audit changed a
 decision, the change is marked **[AUDIT]** and the superseded version is stated, because a
@@ -31,7 +35,8 @@ Everything below is written to those five decisions. No alternative to them is d
 | `rerank-green` | `measure/` (CPU-second windows, clock quantum, preflight/battery/load guards, manifests), `families/` (Popularity, ItemKNN, ImplicitALS, MultVAE — hyperparameters already constructor arguments), `data.py`, `catalogues.py`, held-out-item NDCG |
 | machine | i5-8350U, 4c/8t, 16 GB, Windows 10, mains, Python 3.10, no GPU |
 
-To add: `optuna` (TPE must be a real TPE), `scikit-learn`.
+`optuna` and `scikit-learn` are pinned in `pyproject.toml` so TPE is a real TPE when that
+baseline is built. They are unused until the optimiser layer exists.
 
 New code, kept to a minimum: leave-two-out splits, the benchmark builder, the sequential
 Markov family, the space encoder, the two surrogates, the acquisition→QUBO layer, the
@@ -453,9 +458,12 @@ session (probe outside the window, scoring outside the window, repeats when belo
 15.625 ms clock quantum, sequential runs, preflight refusing to start on battery).
 
 `codecarbon` is recorded as a secondary channel and **reported as invalid on this machine** —
-green-rerank measured 0.0% reported utilisation under 8 saturated cores, a hardcoded 10.000 W
-RAM figure, and a fully-loaded run reporting less total energy than idle. It appears in the
-report as evidence for that claim and never as an energy measurement.
+green-rerank measured a hardcoded 10.000 W RAM figure supplying 81–87% of reported total,
+utilisation that does not track load, and total reported power moving only ~1.06× from idle
+to a saturated CPU. An earlier sentence that a fully-loaded run used *less* energy than idle
+was withdrawn there; do not repeat it. codecarbon appears in this project's report as
+evidence that the backend is invalid, never as an energy measurement. The dependency is
+listed so that claim stays reproducible; this repository does not yet call it.
 
 **[AUDIT: three problems with CPU-seconds, all now handled explicitly.]**
 

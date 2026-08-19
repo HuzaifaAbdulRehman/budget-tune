@@ -13,11 +13,13 @@ one canonical configuration -- that degeneracy is a property of the encoding and
 as such. It is deliberately not a property of the benchmark, which measures each distinct
 model exactly once.
 
-**Data fraction has three levels, and that is a design constraint rather than a taste.**
-Successive halving and Hyperband need a fidelity ladder. Making the rungs *be* the fraction
-levels means a low-fidelity probe of a configuration is literally an already-measured row
-of the benchmark: no extra measurement, no approximation, and no argument about what a rung
-cost. A fourth level would have bought a finer energy axis and broken that identity.
+**Data fraction has three levels, and that is a decision variable, not the fidelity ladder.**
+The calibration pilot measured that a quarter of the data costs the same as all of it for
+ALS and MultVAE, so a fraction rung would not be a cheap approximation of anything. The
+successive-halving ladder is *epochs* (see ``budget_tune.fidelity``). Three fraction values
+remain because they are part of the CASH space every method may return, and because nested
+recency retention is still a well-defined data-reduction axis even when it is not a cost
+lever. A fourth level would densify that axis without restoring a cheap fidelity.
 """
 
 from __future__ import annotations
@@ -25,8 +27,8 @@ from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import dataclass
 
-#: Training-data retention levels. Also the multi-fidelity rungs -- see the module
-#: docstring.
+#: Training-data retention levels. A decision variable of every configuration, not the
+#: successive-halving resource -- that ladder is epochs, in ``budget_tune.fidelity``.
 DATA_FRACTIONS: tuple[float, ...] = (0.25, 0.5, 1.0)
 
 
@@ -155,6 +157,44 @@ def _format(value) -> str:
     return str(value)
 
 
+def match_grid_value(value, grid: tuple):
+    """Re-attach a CSV-round-tripped value to the declared grid cell.
+
+    Pandas will read ``1`` as ``1.0`` and ``False`` as ``0``. Comparing to the declared
+    tuple by equality would then miss, and a configuration would silently become a
+    different one.
+    """
+    if value in grid:
+        return value
+    if isinstance(value, bool):
+        for cell in grid:
+            if isinstance(cell, bool) and cell is value:
+                return cell
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        for cell in grid:
+            if isinstance(cell, bool):
+                continue
+            if isinstance(cell, (int, float)) and abs(float(value) - float(cell)) < 1e-12:
+                return cell
+    formatted = _format(value)
+    for cell in grid:
+        if _format(cell) == formatted:
+            return cell
+    raise KeyError(f"{value!r} does not match any of {grid}")
+
+
+def configuration_from_row(row) -> Configuration:
+    """Rebuild a :class:`Configuration` from a search-table row."""
+    family = str(row["family"])
+    spec = FAMILY_BY_NAME[family]
+    params = tuple(
+        (h.name, match_grid_value(row[f"{family}.{h.name}"], h.values))
+        for h in spec.hyperparameters
+    )
+    fraction = match_grid_value(row["data_fraction"], DATA_FRACTIONS)
+    return Configuration(family=family, params=params, data_fraction=float(fraction))
+
+
 @dataclass(frozen=True)
 class Configuration:
     """One canonical configuration: a family, its hyperparameters, and a data fraction."""
@@ -234,6 +274,23 @@ def space_size() -> dict[str, int]:
     return counts
 
 
+def block_layout() -> list[tuple[str, tuple]]:
+    """One-hot blocks of the flat (E1) encoding, in the order bits are packed.
+
+    Shared by the width calculator and the codec so the two cannot disagree about
+    what bit 17 means. Family and data-fraction come first; each family's own
+    hyperparameters follow in declaration order.
+    """
+    blocks: list[tuple[str, tuple]] = [
+        ("family", tuple(spec.name for spec in FAMILIES)),
+        ("data_fraction", DATA_FRACTIONS),
+    ]
+    for spec in FAMILIES:
+        for hyperparameter in spec.hyperparameters:
+            blocks.append((f"{spec.name}.{hyperparameter.name}", hyperparameter.values))
+    return blocks
+
+
 def binary_width() -> dict[str, int]:
     """One-hot width of the flat (E1) encoding, and the resulting surrogate size.
 
@@ -241,14 +298,42 @@ def binary_width() -> dict[str, int]:
     surrogate over ``d`` binary variables has ``1 + d + d(d-1)/2`` parameters, and a
     realistic optimisation budget affords tens of observations, not hundreds.
     """
-    blocks = [len(FAMILIES), len(DATA_FRACTIONS)] + [
-        hyperparameter.size
-        for spec in FAMILIES
-        for hyperparameter in spec.hyperparameters
-    ]
-    d = sum(blocks)
+    blocks = block_layout()
+    d = sum(len(values) for _, values in blocks)
     return {
         "blocks": len(blocks),
         "variables": d,
         "surrogate_parameters": 1 + d + d * (d - 1) // 2,
     }
+
+
+def coarse_grid() -> list[Configuration]:
+    """The grid-search baseline: endpoints and midpoint of every axis, not the table.
+
+    Enumerating the whole 471-cell space would make "grid search" the benchmark itself.
+    Each hyperparameter contributes its first value, its last value, and the value at
+    index ``(n - 1) // 2``. Axes of length 2 or 3 therefore appear in full; longer axes
+    drop the extra interior points. Data fraction is included as an axis. Order is the
+    same as :func:`enumerate_configurations` so a resumed comparison cannot reshuffle.
+    """
+    from itertools import product
+
+    selected: list[Configuration] = []
+    for spec in FAMILIES:
+        axes = []
+        names = []
+        for hyperparameter in spec.hyperparameters:
+            values = hyperparameter.values
+            keep = {0, (len(values) - 1) // 2, len(values) - 1}
+            axes.append(tuple(values[i] for i in sorted(keep)))
+            names.append(hyperparameter.name)
+        for fraction in DATA_FRACTIONS:
+            for combination in product(*axes) if axes else [()]:
+                selected.append(
+                    Configuration(
+                        family=spec.name,
+                        params=tuple(zip(names, combination, strict=True)),
+                        data_fraction=float(fraction),
+                    )
+                )
+    return selected
