@@ -112,3 +112,24 @@ Every kept row is measured on mains power, verified before and after its own mea
 on a machine whose competing load is recorded in the row itself. The `other_cores` column
 means the question "was this measured on a quiet machine?" is answerable from the data
 rather than from a promise.
+
+## How it ended
+
+The campaign completed: **5,052 rows**, 471 configurations across four catalogues, three
+seeds for the stochastic families and one for the deterministic ones, every row measured on
+mains power and verified before and after its own measurement. No training reading fell below
+the clock quantum. `results/benchmark/` holds the four schema files and the manifest.
+
+Two things this history does not let you check, and they are stated in `docs/report.md`
+rather than left for a reader to discover:
+
+* **The manifest describes the last resume only** -- `completed_runs: 827`, 2,934 seconds.
+  It is rewritten by each segment, so 83.6% of the rows have no recorded baseline, preflight
+  or conditions, and the contention threshold it names governed only the final stretch.
+* **Contention was recorded per row but not prevented.** `other_cores` has median 0.31 and
+  maximum 6.93. The guard stops only on five consecutive violations, so isolated spikes pass.
+  The median-of-three aggregation absorbs this for ALS and MultVAE; the 300 single-seed
+  deterministic rows have no such protection.
+
+Neither affects the quality columns. Both bear on the cost axis, which is the axis the
+comparison is drawn on, which is why they are in the report and not only here.

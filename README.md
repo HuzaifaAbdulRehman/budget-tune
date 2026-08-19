@@ -127,7 +127,17 @@ python -m experiments.check_report
 ```
 
 Both companion checkouts must be findable — `../qubo-rerank` and `../rerank-green`, or set
-`BUDGET_TUNE_FEASIBLE_RERANK` / `BUDGET_TUNE_GREEN_RERANK`. They supply the metrics, solvers,
+`BUDGET_TUNE_FEASIBLE_RERANK` / `BUDGET_TUNE_GREEN_RERANK`.
+
+**Those two repositories are private, so most of this suite will not run for you.** Without
+them `pytest tests/` gives roughly 129 passed and 87 skipped — the search space, the benchmark
+schema, the surrogates, the QUBO layer and the structural guarantee that search-side code
+cannot reach the reporting split, all of which are self-contained. Everything touching the
+data split, the model families or the measurement session is skipped, and `--strict-companion`
+turns those skips into failures on purpose. The committed artifacts under `results/` are the
+outputs of those runs, so every number in the report can be recomputed from this repository
+alone with `python -m experiments.verify_claims`, whether or not you can run the campaign that
+produced them. They supply the metrics, solvers,
 measurement session and four of the five families, and are imported rather than vendored: two
 implementations of "the same" metric that disagree is the failure this family of projects is
 meant to be above. Datasets are located, never copied.
