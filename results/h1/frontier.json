@@ -1,0 +1,121 @@
+{
+  "gift_cards": {
+    "n": 471,
+    "quality_range": [
+      0.016639350912925,
+      0.197726006069792
+    ],
+    "cost_range": [
+      8.30675172780436e-05,
+      3.578125
+    ],
+    "frontier_size": 9,
+    "fraction_cost_ratio_1_over_0_25": {
+      "als": 1.0,
+      "itemknn": 1.3606080584463935,
+      "markov": 2.258493405329361,
+      "multvae": 0.9857142857142858,
+      "popularity": 0.9648227712137485
+    },
+    "frontier_config_ids": [
+      "popularity||frac=0.5",
+      "popularity||frac=0.25",
+      "itemknn|topk=300;shrink=100.0|frac=0.5",
+      "itemknn|topk=300;shrink=10.0|frac=0.5",
+      "itemknn|topk=300;shrink=100.0|frac=1.0",
+      "itemknn|topk=300;shrink=10.0|frac=1.0",
+      "markov|order=1;smoothing=0.5;decay=true|frac=1.0",
+      "markov|order=1;smoothing=0.5;decay=false|frac=1.0",
+      "markov|order=1;smoothing=0.1;decay=false|frac=1.0"
+    ]
+  },
+  "luxury_beauty": {
+    "n": 471,
+    "quality_range": [
+      0.020031988513416,
+      0.311446441993705
+    ],
+    "cost_range": [
+      0.000111487691758,
+      30.78125
+    ],
+    "frontier_size": 10,
+    "fraction_cost_ratio_1_over_0_25": {
+      "als": 1.0154109589041096,
+      "itemknn": 1.3800000000000086,
+      "markov": 2.418699186991893,
+      "multvae": 0.9931506849315068,
+      "popularity": 1.1361978111086906
+    },
+    "frontier_config_ids": [
+      "popularity||frac=0.25",
+      "markov|order=1;smoothing=0.0;decay=true|frac=0.25",
+      "markov|order=1;smoothing=0.1;decay=true|frac=0.25",
+      "markov|order=1;smoothing=0.1;decay=true|frac=0.5",
+      "markov|order=1;smoothing=0.5;decay=true|frac=1.0",
+      "markov|order=1;smoothing=0.5;decay=false|frac=1.0",
+      "markov|order=1;smoothing=0.1;decay=false|frac=1.0",
+      "markov|order=2;smoothing=0.1;decay=false|frac=1.0",
+      "itemknn|topk=50;shrink=10.0|frac=1.0",
+      "itemknn|topk=300;shrink=100.0|frac=1.0"
+    ]
+  },
+  "ml100k": {
+    "n": 471,
+    "quality_range": [
+      0.015602457754516,
+      0.079475733232263
+    ],
+    "cost_range": [
+      0.000115356220007,
+      20.25
+    ],
+    "frontier_size": 9,
+    "fraction_cost_ratio_1_over_0_25": {
+      "als": 1.3221476510067114,
+      "itemknn": 1.7608695652174011,
+      "markov": 2.625000000000028,
+      "multvae": 1.0216450216450217,
+      "popularity": 1.6629834254135505
+    },
+    "frontier_config_ids": [
+      "popularity||frac=0.25",
+      "popularity||frac=1.0",
+      "markov|order=1;smoothing=0.1;decay=false|frac=0.25",
+      "markov|order=1;smoothing=0.5;decay=false|frac=0.5",
+      "markov|order=1;smoothing=0.5;decay=false|frac=1.0",
+      "als|factors=32;epochs=5;regularisation=0.01;alpha=1.0|frac=1.0",
+      "als|factors=64;epochs=5;regularisation=0.1;alpha=1.0|frac=1.0",
+      "als|factors=32;epochs=15;regularisation=0.01;alpha=1.0|frac=1.0",
+      "als|factors=32;epochs=30;regularisation=0.1;alpha=1.0|frac=1.0"
+    ]
+  },
+  "software": {
+    "n": 471,
+    "quality_range": [
+      0.017444854798249,
+      0.235366632471109
+    ],
+    "cost_range": [
+      9.174985320023487e-05,
+      16.84375
+    ],
+    "frontier_size": 7,
+    "fraction_cost_ratio_1_over_0_25": {
+      "als": 1.0134680134680134,
+      "itemknn": 1.2991452991453039,
+      "markov": 1.7296918767507652,
+      "multvae": 0.9423728813559322,
+      "popularity": 1.1240924092370752
+    },
+    "frontier_config_ids": [
+      "popularity||frac=0.25",
+      "markov|order=1;smoothing=0.0;decay=false|frac=0.25",
+      "markov|order=1;smoothing=0.1;decay=false|frac=0.25",
+      "markov|order=1;smoothing=0.5;decay=false|frac=0.5",
+      "markov|order=1;smoothing=0.1;decay=false|frac=0.5",
+      "markov|order=1;smoothing=0.1;decay=true|frac=1.0",
+      "markov|order=1;smoothing=0.5;decay=true|frac=1.0"
+    ]
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "catalogues": [
+    "ml100k",
+    "luxury_beauty",
+    "software",
+    "gift_cards"
+  ],
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "k": 10,
+  "space": {
+    "popularity": 3,
+    "itemknn": 36,
+    "als": 324,
+    "multvae": 72,
+    "markov": 36,
+    "total": 471
+  },
+  "data_fractions": [
+    0.25,
+    0.5,
+    1.0
+  ],
+  "threads": {
+    "requested": 1,
+    "environment": {
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    },
+    "environment_consistent": true,
+    "torch_threads": 1
+  },
+  "clock_quantum_seconds": 0.015625,
+  "preflight": {
+    "power_source": "ac",
+    "machine_busy_pct": 22.5,
+    "exclusive": true,
+    "warnings": ""
+  },
+  "machine": {
+    "platform": "Windows-10-10.0.19045-SP0",
+    "cpu_count": 8,
+    "python": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]"
+  },
+  "companions": {
+    "feasible_rerank": "5147c0d",
+    "green_rerank": "df985c0"
+  },
+  "source": {
+    "source_sha256": "a0c52b4f4d5f77f4",
+    "files": 47
+  },
+  "planned_runs": 5052,
+  "contention": {
+    "baseline_cores": 1.0599713746873596,
+    "baseline_seconds": 5.0,
+    "margin_cores": 0.75,
+    "tolerance_cores": 1.8099713746873596
+  },
+  "conditions": {
+    "power_sources_seen": [
+      "ac"
+    ],
+    "power_source_changed": false,
+    "samples": 2903,
+    "cpu_mhz_max": 1696.0,
+    "cpu_mhz_min": 1696.0,
+    "cpu_mhz_mean": 1696.0,
+    "frequency_drop": 0.0,
+    "frequency_sensor_responsive": false,
+    "throttled": null,
+    "conditions_changed": false
+  },
+  "elapsed_seconds": 2934.380242600002,
+  "completed_runs": 827
+}
