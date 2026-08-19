@@ -131,7 +131,11 @@ def check_optional_hpo(failures: list[str]) -> None:
         if not path.exists():
             continue
         frame = pd.read_csv(path)
-        check(len(frame) == 240, f"{name} HPO has {len(frame)} rows, expected 240", failures)
+        check(
+            len(frame) % 30 == 0 and len(frame) >= 240,
+            f"{name} HPO has {len(frame)} rows, expected a multiple of 30 and >= 240",
+            failures,
+        )
 
 
 def main() -> int:

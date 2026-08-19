@@ -39,6 +39,46 @@ def grid_proposer():
     return propose
 
 
+def grid_interleaved_proposer():
+    """The coarse sub-grid walked round-robin across families rather than in declaration order.
+
+    ``grid_proposer`` enumerates families in the order they are declared and stops when the
+    CPU budget runs out. Measured on the four catalogues, that budget expires after 96-99 of
+    381 candidates -- always inside ALS -- so the declaration-order baseline never evaluated
+    a single MultVAE or Markov configuration anywhere, and its answer depends on how
+    ``FAMILIES`` happens to be written.
+
+    This variant takes one candidate from each family in turn, so an exhausted budget
+    truncates every family evenly instead of deleting the tail of the list. It is reported
+    *beside* the original rather than replacing it: swapping a baseline after seeing its
+    result would be choosing the number, whereas showing both measures how much a coarse
+    grid depends on an arbitrary ordering.
+    """
+    from itertools import zip_longest
+
+    by_family: dict[str, list[str]] = {}
+    for config in coarse_grid():
+        by_family.setdefault(config.family, []).append(config.config_id)
+
+    ordered = [
+        cid
+        for group in zip_longest(*by_family.values())
+        for cid in group
+        if cid is not None
+    ]
+    cursor = {"i": 0}
+
+    def propose(history: History) -> str:
+        available = [cid for cid in ordered if cid in set(history.view.config_ids())]
+        if not available:
+            raise RuntimeError("coarse grid is empty on this view")
+        i = min(cursor["i"], len(available) - 1)
+        cursor["i"] += 1
+        return available[i]
+
+    return propose
+
+
 def tpe_proposer(rng: np.random.Generator, n_startup_trials: int = 10):
     """Real Optuna TPE, suggesting from the declared categorical grids only."""
     sampler = TPESampler(seed=int(rng.integers(0, 2**31)), n_startup_trials=n_startup_trials)

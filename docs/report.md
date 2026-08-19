@@ -70,6 +70,7 @@ each method actually bought with its budget:
 | fmqa | 0.1975 | 0.0788 | 0.3104 | 0.2353 | 60.5 | 1.3% |
 | grid | 0.1902 | 0.0738 | 0.3114 | 0.2273 | 98.5 | 1.5% |
 | bocs | 0.1898 | 0.0776 | 0.3001 | 0.2270 | 40.0 | 13.1% |
+| grid (interleaved) | 0.1977 | 0.0769 | 0.3114 | 0.2354 | 142.0 | 1.5% |
 | successive halving | 0.1936 | 0.0776 | 0.3001 | 0.2329 | 46.5 | 0% |
 | random | 0.1909 | 0.0779 | 0.3013 | 0.2337 | 46.0 | 0% |
 | sm2 | 0.1913 | 0.0782 | 0.3013 | 0.2334 | 45.5 | 0% |
@@ -103,14 +104,31 @@ and test two after, so temporal adjacency would favour a first-order Markov mode
 validation. **That is the reading these ratios fit; it is not established here** — confirming
 it needs a split whose two targets are equidistant from training, which was not measured.
 
-**Grid's apparent advantage is enumeration order, not judgement.** The coarse grid *contains*
-the validation optimum on all four catalogues and evaluates it on only one — Luxury Beauty,
-where it happens to sit at position 30 of 381. Grid enumerates in family-declaration order and
-its CPU budget expires after 96–99 candidates, always inside ALS: **it never evaluated a single
-MultVAE or Markov configuration on any catalogue.** On Software the validation optimum sits at
-position 375 of 381. Grid therefore cannot select the family that collapses on test, and its
-test number would change if `FAMILIES` were declared in a different order. It is a weaker
-baseline than intended, and its test result is not evidence for coarse grid search.
+**Grid's apparent advantage is enumeration order, not judgement — and re-running it proves
+that rather than inferring it.** The coarse grid *contains* the validation optimum on all four
+catalogues and evaluates it on only one, Luxury Beauty, where it happens to sit at position 30
+of 381. Grid enumerates in family-declaration order and its CPU budget expires after 96–99
+candidates, always inside ALS: **it never evaluated a single MultVAE or Markov configuration on
+any catalogue.** On Software the validation optimum sits at position 375 of 381.
+
+`grid_interleaved` is the same candidate set walked round-robin across families instead, run
+at the same 30 seeds and the same budgets. It is reported *beside* the original, not in place
+of it — swapping a baseline after seeing its result would be choosing the number:
+
+| | Gift Cards | ML-100K | Luxury Beauty | Software |
+|---|---|---|---|---|
+| grid (declaration order), validation | 0.1902 | 0.0738 | 0.3114 | 0.2273 |
+| grid (interleaved), validation | **0.1977** | **0.0769** | 0.3114 | **0.2354** |
+| grid (declaration order), **test** | **0.1502** | 0.0614 | 0.1685 | **0.1342** |
+| grid (interleaved), **test** | 0.1239 | 0.0645 | 0.1685 | **0.0443** |
+
+Sampling families evenly makes grid better on validation — it now ties TPE on Gift Cards and
+Software — and **destroys its test advantage**, which falls to 0.0443 on Software, exactly
+where every other method lands. The declaration-order grid's test result was an artifact of
+never reaching the family that overfits validation. It is also the *cheaper* walk: interleaving
+reaches a median of 142 distinct cells against 96–99, because the declaration order spends the
+budget inside ALS. Coarse grid search is not a better method here; one particular ordering of
+it accidentally avoided the trap.
 
 **RQ2: post-filter is exact, and QUBO does not own the constraint axis.** Across 20
 (catalogue, τ) cells (`results/rq2/`), post-filter is feasible and optimal in **20/20**.
@@ -151,7 +169,8 @@ popularity, ItemKNN and Markov carries this noise.
 - BOCS or FMQA beats strong classical HPO at equal cost as a general result.
 - A QUBO *solver* is necessary at 471 cells.
 - That a surrogate can find the optimum from tens of observations.
-- That coarse grid search is a better method than TPE.
+- That coarse grid search is a better method than TPE. Its test advantage disappears once
+  the same candidate set is walked in a different order.
 - That the leave-two-out family bias is established rather than the best-fitting reading.
 - Retraining on train+val. Hit-rate vs depth. Companion Phase 5/6 CI ratios.
 - Transfer of the companion `P(Σx−k)²` disconnect to this encoding.

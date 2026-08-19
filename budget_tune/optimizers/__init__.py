@@ -2,6 +2,7 @@
 
 from budget_tune.optimizers.base import checkpoint, run
 from budget_tune.optimizers.classical import (
+    grid_interleaved_proposer,
     grid_proposer,
     hyperband_proposer,
     random_proposer,
@@ -15,6 +16,7 @@ __all__ = [
     "bocs_proposer",
     "checkpoint",
     "fmqa_proposer",
+    "grid_interleaved_proposer",
     "grid_proposer",
     "hyperband_proposer",
     "random_proposer",

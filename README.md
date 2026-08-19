@@ -8,9 +8,11 @@ design is written so that "no", "only under constraints", "the surrogate is the 
 and "a brute-force enumeration makes the whole apparatus unnecessary" are all reachable
 conclusions, and it pre-registers which of them the evidence would support.
 
-> **Status: table, RQ0, H1 and RQ1 are measured.** The 5,052-cell benchmark is in
-> `results/benchmark/`. Equal-cost HPO does not show a BOCS/FMQA win over TPE; see
-> [`docs/report.md`](docs/report.md). [`docs/design.md`](docs/design.md) is the protocol.
+> **Status: complete.** The 5,052-cell benchmark and RQ0, H1, RQ1, RQ2 and RQ3 are in
+> `results/`. Equal-cost HPO shows no BOCS/FMQA win over TPE, and post-filtering beats both
+> QUBO constraint encodings outright on an enumerable space.
+> [`docs/report.md`](docs/report.md) is what the artifacts say and wins over
+> [`docs/design.md`](docs/design.md), which remains the protocol.
 
 ## What it is
 
@@ -31,7 +33,7 @@ Neither is novel, and the repository says so. What has not been done, as far as 
 search could establish, is comparing them against strong classical HPO on recommender model
 selection **at equal measured cost**.
 
-## Two findings before the campaign has run
+## Three findings worth the trip
 
 **Repeat interactions were silently biasing the benchmark toward the project's own
 hypothesis.** The Amazon exports record the same `(user, item)` pair more than once — 18.2%
@@ -52,7 +54,20 @@ already negligible. This is implementation-dependent and does not contradict the
 result it was meant to replicate, but it relocates the project's energy lever to `factors`,
 `epochs` and family choice. The fidelity ladder is therefore epochs, not data fraction;
 that decision is in [`docs/design.md`](docs/design.md) §6.4 and was checked on Gift Cards
-(§7.0) before Hyperband is allowed to use it.
+(§7.0) before Hyperband was allowed to use it.
+
+**The selection split and the reporting split disagree about which model family wins, and
+the coarse grid baseline was never able to notice.** On Software and Gift Cards the best
+configuration on validation is a sequential Markov model and the best on test is ItemKNN;
+Spearman between the two splits across all 471 cells is 0.811, so they disagree precisely
+where selection happens. Every method that can reach the validation optimum selects Markov
+and scores ~0.044 on Software test — random search included. Grid alone reaches 0.134, and
+not by judgement: it enumerates in family-declaration order, exhausts its budget after 96–99
+of 381 candidates, and **never evaluated a single MultVAE or Markov configuration on any
+catalogue**. Leave-two-out places validation one interaction after training and test two
+after, which would favour a first-order Markov model on validation — the reading these
+ratios fit, and one this project has not established. See
+[`results/split_bias/`](results/split_bias) and `docs/report.md`.
 
 ## Design in one page
 

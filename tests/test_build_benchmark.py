@@ -94,8 +94,13 @@ class TestResumption:
         assert todo == [("d", "c", 1)]
 
 
+@pytest.mark.companion
 class TestPowerGuard:
     """Fail fast on a power-state change rather than reporting it after the fact.
+
+    Marked ``companion``: ``on_mains`` reads ``power_source`` from green-rerank, so these
+    need the checkout. Without the marker they did not auto-skip and were the reason CI
+    went red on three Python versions while the same suite passed locally.
 
     The first campaign run measured 1,263 configurations across a transition from AC to
     battery. Every quality metric was byte-identical to what it would have been; the CPU

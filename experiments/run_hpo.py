@@ -19,6 +19,7 @@ from budget_tune.optimizers import (
     bocs_proposer,
     checkpoint,
     fmqa_proposer,
+    grid_interleaved_proposer,
     grid_proposer,
     hyperband_proposer,
     random_proposer,
@@ -37,12 +38,17 @@ METHODS = (
     "sm2",
     "bocs",
     "fmqa",
+    # Appended, never inserted. Seeds are derived from METHODS.index(method), so moving an
+    # existing entry would silently reseed every run already measured.
+    "grid_interleaved",
 )
 
 
 def make_proposer(name: str, rng: np.random.Generator, n_init: int, n_startup: int):
     if name == "grid":
         return grid_proposer()
+    if name == "grid_interleaved":
+        return grid_interleaved_proposer()
     if name == "random":
         return random_proposer(rng)
     if name == "tpe":
@@ -131,7 +137,17 @@ def main() -> int:
                 f"{method} seed={seed} best={record['best_quality']:.4f} "
                 f"unique={record['n_unique']}"
             )
-    pd.DataFrame(rows).to_csv(args.out / f"{args.dataset}_summary.csv", index=False)
+    # Merge rather than overwrite. Writing only the methods this invocation ran silently
+    # deleted the other eight from the summary the first time a single method was re-run,
+    # and `analyse` reads the summary -- so the whole comparison collapsed to one row set
+    # while every per-seed JSON was still on disk and intact.
+    summary_path = args.out / f"{args.dataset}_summary.csv"
+    frame = pd.DataFrame(rows)
+    if summary_path.exists():
+        previous = pd.read_csv(summary_path)
+        frame = pd.concat([previous, frame], ignore_index=True)
+        frame = frame.drop_duplicates(subset=["dataset", "method", "seed"], keep="last")
+    frame.sort_values(["method", "seed"]).to_csv(summary_path, index=False)
     return 0
 
 
